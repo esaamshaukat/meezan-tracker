@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Meezan Tracker Icons</title>
+    <style>
+        body {
+            background: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: system-ui, sans-serif;
+        }
+        .card {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 24px;
+            text-align: center;
+            color: white;
+        }
+        button {
+            background: #22c55e;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>📱 Meezan Tracker Icons</h2>
+    <p>Click the button below to download both icon sizes.</p>
+    <button id="downloadBtn">⬇️ Download Icons (192px & 512px)</button>
+    <p style="margin-top: 16px; font-size: 12px; opacity: 0.7;">The icons will be saved to your Downloads folder.</p>
+</div>
+
+<script>
+    function generateIcon(size) {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        
+        // Background gradient (dark green to bright green)
+        const grad = ctx.createLinearGradient(0, 0, size, size);
+        grad.addColorStop(0, '#1e5a3a');
+        grad.addColorStop(1, '#22c55e');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, size, size);
+        
+        // Rounded corners (clip path)
+        ctx.save();
+        ctx.beginPath();
+        const radius = size * 0.2;
+        ctx.moveTo(radius, 0);
+        ctx.lineTo(size - radius, 0);
+        ctx.quadraticCurveTo(size, 0, size, radius);
+        ctx.lineTo(size, size - radius);
+        ctx.quadraticCurveTo(size, size, size - radius, size);
+        ctx.lineTo(radius, size);
+        ctx.quadraticCurveTo(0, size, 0, size - radius);
+        ctx.lineTo(0, radius);
+        ctx.quadraticCurveTo(0, 0, radius, 0);
+        ctx.closePath();
+        ctx.clip();
+        
+        // Draw the chart line (upward trend)
+        ctx.beginPath();
+        const x1 = size * 0.23;
+        const y1 = size * 0.62;
+        const x2 = size * 0.43;
+        const y2 = size * 0.47;
+        const x3 = size * 0.62;
+        const y3 = size * 0.55;
+        const x4 = size * 0.82;
+        const y4 = size * 0.35;
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.lineTo(x3, y3);
+        ctx.lineTo(x4, y4);
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = size * 0.031;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+        
+        // Draw Dollar sign ($)
+        ctx.font = `bold ${size * 0.28}px "Segoe UI", Arial, sans-serif`;
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('$', size / 2, size * 0.8);
+        
+        ctx.restore();
+        
+        return canvas.toDataURL('image/png');
+    }
+    
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+        const data512 = generateIcon(512);
+        const link512 = document.createElement('a');
+        link512.download = 'icon-512.png';
+        link512.href = data512;
+        link512.click();
+        
+        const data192 = generateIcon(192);
+        const link192 = document.createElement('a');
+        link192.download = 'icon-192.png';
+        link192.href = data192;
+        link192.click();
+        
+        setTimeout(() => {
+            alert('✅ Icons downloaded! Move them into your "icons" folder.');
+        }, 500);
+    });
+</script>
+</body>
+</html>
