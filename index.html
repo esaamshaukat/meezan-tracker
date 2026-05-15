@@ -235,6 +235,9 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{animation:spin .8s linear infinite;display:inline-block}
 
+/* ── SIDEBAR — hidden by default, shown only on desktop ── */
+.sidebar{display:none!important}
+
 /* ── WELCOME SCREEN ── */
 #welcomeScreen{
   position:fixed;inset:0;z-index:9999;
@@ -348,6 +351,7 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
    TABLET (iPad) — 768px to 1199px
    ════════════════════════════════════════════════ */
 @media(min-width:768px){
+  .sidebar{display:none!important}
   .wrap{padding:32px 24px 80px}
 
   /* Header horizontal layout */
@@ -400,10 +404,10 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
   .app-shell{display:flex;gap:0;min-height:100vh}
 
   .sidebar{
+    display:flex!important;flex-direction:column;
     width:220px;min-width:220px;
     background:var(--bg2);
     border-right:1px solid var(--border);
-    display:flex;flex-direction:column;
     padding:28px 0;
     position:fixed;top:0;left:0;bottom:0;
     z-index:100;overflow-y:auto;
