@@ -2,8 +2,8 @@ name: Fetch Meezan NAVs Daily
 
 on:
   schedule:
-    - cron: '0 18 * * *'  # Runs daily at 6PM PKT (UTC+5, so 1PM UTC)
-  workflow_dispatch:        # Also lets you run it manually anytime
+    - cron: '0 18 * * *'
+  workflow_dispatch:
 
 jobs:
   fetch-navs:
