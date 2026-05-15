@@ -343,9 +343,200 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
   font-size:11px;color:var(--txt3);letter-spacing:1px;
   animation:up .6s ease 1.5s both;
 }
+
+/* ════════════════════════════════════════════════
+   TABLET (iPad) — 768px to 1199px
+   ════════════════════════════════════════════════ */
+@media(min-width:768px){
+  .wrap{padding:32px 24px 80px}
+
+  /* Header horizontal layout */
+  .hdr{display:flex;flex-direction:row;align-items:center;justify-content:space-between;
+    text-align:left;gap:20px;flex-wrap:wrap}
+  .hdr-left{display:flex;flex-direction:column;align-items:flex-start}
+  .hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+
+  /* Tabs — bigger touch targets */
+  .tb{font-size:12px;padding:10px 10px}
+  .tb i{font-size:13px}
+
+  /* KPI — 4 per row always */
+  .kgrid{grid-template-columns:repeat(4,1fr);gap:12px}
+  .kval{font-size:20px}
+
+  /* Fund cards — 2 column grid */
+  .fund-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  /* Form grids — more columns */
+  .fgrid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+
+  /* Tables — no horizontal scroll needed */
+  table{min-width:auto}
+
+  /* Overview 2-col layout */
+  .ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ov-full{grid-column:span 2}
+
+  /* FX grid */
+  .fxgrid{grid-template-columns:repeat(4,1fr)}
+
+  /* Pie chart bigger */
+  #pieChart{max-width:280px}
+
+  /* Card padding */
+  .card{padding:22px}
+
+  /* Buttons bigger */
+  .btn{padding:11px 22px;font-size:13px}
+}
+
+/* ════════════════════════════════════════════════
+   DESKTOP — 1200px+
+   ════════════════════════════════════════════════ */
+@media(min-width:1200px){
+  .wrap{padding:36px 32px 60px}
+
+  /* Sidebar navigation */
+  .app-shell{display:flex;gap:0;min-height:100vh}
+
+  .sidebar{
+    width:220px;min-width:220px;
+    background:var(--bg2);
+    border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+    padding:28px 0;
+    position:fixed;top:0;left:0;bottom:0;
+    z-index:100;overflow-y:auto;
+  }
+
+  .sidebar-logo{
+    padding:0 20px 24px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:16px;
+  }
+  .sidebar-logo-name{
+    font-family:var(--fd);font-size:20px;font-weight:800;
+    background:linear-gradient(135deg,#eef3f8,#22c55e);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .sidebar-logo-tag{font-size:9px;color:var(--txt3);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+
+  /* Hide top tabs on desktop — use sidebar instead */
+  .tabs{display:none}
+
+  /* Sidebar nav items */
+  .sidebar-nav{display:flex;flex-direction:column;gap:2px;padding:0 10px;flex:1}
+  .snav-btn{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 12px;border-radius:10px;border:none;
+    background:transparent;color:var(--txt2);
+    font-family:var(--fb);font-weight:500;font-size:13px;
+    cursor:pointer;transition:all .2s;text-align:left;width:100%;
+  }
+  .snav-btn i{font-size:14px;width:18px;text-align:center;opacity:.7}
+  .snav-btn:hover{background:rgba(255,255,255,.05);color:var(--txt)}
+  .snav-btn.on{background:var(--gdim);color:var(--green);font-weight:600}
+  .snav-btn.on i{opacity:1}
+
+  /* Sidebar bottom */
+  .sidebar-bottom{padding:16px 10px;border-top:1px solid var(--border);margin-top:auto}
+  .sidebar-rate{font-size:11px;color:var(--amber);padding:8px 12px;
+    background:var(--adim);border-radius:8px;text-align:center}
+  .sidebar-sync{font-size:10px;color:var(--txt3);text-align:center;margin-top:6px}
+
+  /* Main content shifts right */
+  .wrap{margin-left:220px;max-width:calc(100% - 220px);padding:36px 40px 60px}
+
+  /* Header becomes compact top bar */
+  .hdr{
+    display:flex;flex-direction:row;align-items:center;
+    justify-content:space-between;text-align:left;
+    margin-bottom:28px;flex-wrap:wrap;gap:12px;
+  }
+  .hbadge{display:none} /* name shown in sidebar */
+  .hdr h1{font-size:28px}
+  .bticker{display:none} /* rate shown in sidebar */
+  #syncBar{display:none} /* sync shown in sidebar */
+
+  /* Two-column overview layout */
+  .ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .ov-full{grid-column:span 2}
+  .ov-third{grid-column:span 1}
+
+  /* Fund cards 2-col */
+  .fund-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+  /* KPIs */
+  .kgrid{grid-template-columns:repeat(4,1fr);gap:14px}
+  .kcard{padding:18px 16px}
+  .kval{font-size:22px}
+  .kbhd{font-size:11px}
+
+  /* Larger cards */
+  .card{padding:24px}
+  .ctit{font-size:11px;margin-bottom:16px}
+
+  /* Tables look great on wide screen */
+  table{font-size:13px}
+  th{font-size:10px;padding:11px 10px}
+  td{padding:11px 10px}
+
+  /* Forms */
+  .fgrid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+
+  /* Buttons */
+  .btn{padding:11px 24px;font-size:13px}
+
+  /* Chart height */
+  #fyChart{max-height:280px}
+  #fxChart{max-height:280px}
+
+  /* Better hover effects */
+  .fcard:hover{transform:translateX(3px)}
+  .kcard:hover{transform:translateY(-2px)}
+}
+
+/* ════════════════════════════════════════════════
+   DESKTOP WIDESCREEN — 1440px+
+   ════════════════════════════════════════════════ */
+@media(min-width:1440px){
+  .sidebar{width:240px;min-width:240px}
+  .wrap{margin-left:240px;max-width:calc(100% - 240px);padding:40px 48px 60px}
+  .kgrid{gap:16px}
+  .ov-grid{gap:20px}
+}
+
 </style>
 </head>
 <body>
+
+<!-- ══ DESKTOP SIDEBAR ══ -->
+<div class="sidebar" id="desktopSidebar">
+  <div class="sidebar-logo">
+    <img src="icon-192.png" style="width:40px;height:40px;border-radius:11px;margin-bottom:10px;display:block">
+    <div class="sidebar-logo-name">Wafrah</div>
+    <div class="sidebar-logo-tag">Halal Wealth Tracker</div>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <button class="snav-btn on" data-tab="overview"><i class="fas fa-chart-pie"></i>Overview</button>
+    <button class="snav-btn" data-tab="fy"><i class="fas fa-calendar-alt"></i>Fiscal Year</button>
+    <button class="snav-btn" data-tab="funds"><i class="fas fa-layer-group"></i>Funds</button>
+    <button class="snav-btn" data-tab="nav"><i class="fas fa-sync-alt"></i>NAV</button>
+    <button class="snav-btn" data-tab="history"><i class="fas fa-list"></i>History</button>
+    <button class="snav-btn" data-tab="add"><i class="fas fa-plus-circle"></i>Add / Sell</button>
+    <button class="snav-btn" data-tab="fx"><i class="fas fa-fire-alt"></i>FX &amp; BHD</button>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-rate">
+      <i class="fas fa-coins" style="margin-right:5px"></i>
+      <span id="sidebarRate">BHD/PKR loading…</span>
+    </div>
+    <div class="sidebar-sync" id="sidebarSync">Connecting…</div>
+    <div style="font-size:9px;color:var(--txt3);text-align:center;margin-top:10px;letter-spacing:1px">© Esaam Shaukat</div>
+  </div>
+</div>
+
 
 <!-- ══ WELCOME SCREEN ══ -->
 <div id="welcomeScreen">
@@ -447,8 +638,9 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
     </div>
   </div>
 
-  <div class="kgrid" id="kpiBox"></div>
-  <div class="card" id="bhdSumCard">
+  <div class="ov-grid">
+  <div class="ov-full"><div class="kgrid" id="kpiBox"></div></div>
+  <div class="ov-full"><div class="card" id="bhdSumCard">
     <div class="ctit">BHD ↔ PKR Summary (live rate)</div>
     <div id="bhdSumGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px"></div>
   </div>
@@ -1928,6 +2120,47 @@ function initWelcome(){
 }
 
 initWelcome();
+
+// ═══════════════════════════════════════════════════════════════
+// SIDEBAR SYNC (desktop)
+// ═══════════════════════════════════════════════════════════════
+function syncSidebarRate(){
+  const el = document.getElementById('sidebarRate');
+  const rateEl = document.getElementById('liveRate');
+  if(el && rateEl) el.textContent = rateEl.textContent;
+}
+function syncSidebarSync(){
+  const el = document.getElementById('sidebarSync');
+  const syncEl = document.getElementById('syncTxt');
+  if(el && syncEl) el.textContent = syncEl.textContent;
+}
+// Sync sidebar nav with tab clicks
+document.querySelectorAll('.snav-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id=btn.dataset.tab;
+    // Switch tab content
+    Object.values(TABS).forEach(t=>t.classList.add('hidden'));
+    TABS[id].classList.remove('hidden');
+    // Update top tabs
+    document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+    document.querySelectorAll(`.tb[data-tab="${id}"]`).forEach(b=>b.classList.add('on'));
+    // Update sidebar
+    document.querySelectorAll('.snav-btn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+  });
+});
+// Keep top tabs and sidebar in sync when top tabs are clicked
+document.querySelectorAll('.tb').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id=btn.dataset.tab;
+    document.querySelectorAll('.snav-btn').forEach(b=>b.classList.remove('on'));
+    document.querySelectorAll(`.snav-btn[data-tab="${id}"]`).forEach(b=>b.classList.add('on'));
+  });
+});
+// Periodically sync rate and status to sidebar
+setInterval(()=>{ syncSidebarRate(); syncSidebarSync(); }, 2000);
+setTimeout(()=>{ syncSidebarRate(); syncSidebarSync(); }, 1000);
+
 </script>
 </body>
 </html>
