@@ -249,7 +249,7 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   overflow:hidden;
-  animation:wsAutoHide 3.5s ease forwards;
+  animation:wsAutoHide 5s ease forwards;
 }
 #welcomeScreen.gone{
   display:none !important;
@@ -492,7 +492,7 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
     <div class="wWelcome">Welcome to</div>
     <div class="wName">Wafrah</div>
     <div class="wTagline">Your Halal Wealth, Tracked</div>
-    <div class="wVersion">Version 1.4</div>
+    <div class="wVersion">Version 1.5</div>
     <div class="wBar"><div class="wBarFill"></div></div>
   </div>
   <div class="wCredit">© Esaam Shaukat</div>
@@ -1991,14 +1991,14 @@ function initWelcome(){
     container.appendChild(p);
   }
 
-  // When CSS animation ends → remove from DOM
-  ws.addEventListener('animationend', dismissWelcome, {once:true});
+  // When CSS animation ends → remove from DOM (check name to ignore bubbled child events)
+  ws.addEventListener('animationend', (e) => { if(e.animationName === 'wsAutoHide') dismissWelcome(); });
 
   // Tap to skip
   ws.addEventListener('click', dismissWelcome, {once:true});
 
-  // Hard fallback: force remove after 4s no matter what
-  setTimeout(dismissWelcome, 4000);
+  // Hard fallback: force remove after 5.5s no matter what
+  setTimeout(dismissWelcome, 5500);
 }
 
 // ═══════════════════════════════════════════════════════════════
