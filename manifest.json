@@ -1,6 +1,7 @@
 {
   "name": "Wafrah",
   "short_name": "Wafrah",
+  "description": "Your Halal Wealth, Tracked",
   "start_url": "/meezan-tracker/",
   "display": "standalone",
   "background_color": "#070c11",
