@@ -7,10 +7,6 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16a34a">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- Firebase SDK -->
-<script type="module" src="https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
@@ -104,8 +100,8 @@ body::after{content:'';position:fixed;bottom:-20%;right:-10%;width:45%;height:45
 .fhdr{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:9px}
 .fname{font-size:13px;font-weight:600;color:var(--txt);line-height:1.3}
 .ftag{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;font-weight:600}
-.fdet{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
-@media(max-width:480px){.fdet{grid-template-columns:1fr 1fr}}
+.fdet{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+@media(max-width:480px){.fdet{grid-template-columns:1fr 1fr}.fdet .fd:last-child{grid-column:span 2}}
 .fd{background:rgba(255,255,255,.022);border-radius:8px;padding:7px}
 .fdl{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;font-weight:600}
 .fdv{font-size:12px;font-weight:600;color:var(--txt);font-variant-numeric:tabular-nums}
@@ -250,12 +246,6 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
     <b id="liveRate">Fetching…</b>
     <span id="rateNote" style="opacity:.6;font-size:10px;"></span>
   </div>
-  <div id="syncBar" style="display:inline-flex;align-items:center;gap:7px;margin-top:7px;
-    background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:40px;
-    padding:4px 14px;font-size:10px;color:var(--blue)">
-    <i class="fas fa-circle-notch spin" id="syncIcon"></i>
-    <span id="syncTxt">Connecting to cloud…</span>
-  </div>
 </div>
 
 <!-- TABS -->
@@ -271,44 +261,6 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
 
 <!-- ══ OVERVIEW ══ -->
 <div id="tab-overview">
-
-  <!-- INVESTMENT PLAN + CALCULATOR -->
-  <div class="card" style="border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.03)">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-      <div class="ctit" style="margin-bottom:0">
-        <i class="fas fa-bullseye" style="margin-right:6px;color:var(--green)"></i>My Investment Plan
-      </div>
-      <span style="font-size:10px;color:var(--txt3);background:rgba(255,255,255,.05);padding:3px 10px;border-radius:20px">
-        75 · 15 · 5 · 5 strategy
-      </span>
-    </div>
-
-    <!-- 4 target fund strips -->
-    <div id="planFundList" style="display:flex;flex-direction:column;gap:7px;margin-bottom:18px"></div>
-
-    <!-- Calculator -->
-    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:14px">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--txt3);font-weight:600;margin-bottom:12px">
-        <i class="fas fa-calculator" style="margin-right:5px;color:var(--green)"></i>Monthly Investment Calculator
-      </div>
-      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
-        <div style="flex:1;min-width:140px">
-          <label>Amount to Invest (PKR)</label>
-          <input type="number" id="calcAmt" placeholder="e.g. 30000" oninput="calcPlan()">
-        </div>
-        <div style="flex:1;min-width:120px">
-          <label>Or in BHD</label>
-          <input type="number" id="calcBHD" placeholder="e.g. 40" oninput="calcPlanBHD()" step="0.001">
-        </div>
-      </div>
-      <div id="calcResult" style="display:none">
-        <div id="calcBreakdown" style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px"></div>
-        <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);border-radius:9px;padding:11px;font-size:12px;color:var(--txt2)" id="calcSummary"></div>
-      </div>
-      <div id="calcEmpty" style="font-size:12px;color:var(--txt3)">Enter an amount above to see how to split it across your 4 target funds.</div>
-    </div>
-  </div>
-
   <div class="kgrid" id="kpiBox"></div>
   <div class="card" id="bhdSumCard">
     <div class="ctit">BHD ↔ PKR Summary (live rate)</div>
@@ -330,11 +282,6 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
     <div class="ibody" id="insightTxt"></div>
     <button class="btn btn-g" id="fetchNavOvBtn"><i class="fas fa-cloud-download-alt"></i> Fetch Latest NAVs</button>
     <div class="navst" id="navStOv"></div>
-  </div>
-  <div class="card" id="buyOppCard">
-    <div class="ctit"><i class="fas fa-crosshairs" style="margin-right:6px;color:var(--amber)"></i>Buying Opportunity Analysis — Current FY</div>
-    <div id="buyOppBody" style="font-size:13px;color:var(--txt2);line-height:1.6;margin-bottom:14px"></div>
-    <div id="buyOppFunds"></div>
   </div>
 </div>
 
@@ -400,6 +347,10 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
       <div><label>To (DD/MM/YYYY)</label><input type="text" id="flTo" placeholder="Today"></div>
       <div style="padding-top:20px"><button class="btn btn-g" id="clearFl" style="width:100%;justify-content:center">Clear</button></div>
     </div>
+    <div id="undoBar" class="undo hidden">
+      <span><i class="fas fa-exclamation-triangle" style="margin-right:5px"></i>Transaction deleted</span>
+      <button class="btn btn-g" id="restoreBtn" style="padding:5px 13px">Undo</button>
+    </div>
     <div class="twrap">
       <table>
         <thead><tr>
@@ -413,30 +364,7 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
     <div class="div"></div>
     <button class="btn btn-r" id="resetBtn"><i class="fas fa-undo-alt"></i> Reset to Original Data</button>
   </div>
-
-  <!-- DELETED SECTION -->
-  <div class="card" id="deletedCard">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-      <div class="ctit" style="margin-bottom:0">
-        <i class="fas fa-trash-alt" style="margin-right:6px;color:var(--red)"></i>
-        Deleted Transactions &nbsp;<span id="deletedCount" style="background:var(--rdim);color:var(--red);border-radius:20px;padding:1px 8px;font-size:10px">0</span>
-      </div>
-      <button class="btn btn-r" id="clearAllDeletedBtn" style="font-size:11px;padding:5px 12px">
-        <i class="fas fa-trash"></i> Clear All Permanently
-      </button>
-    </div>
-    <div id="deletedEmpty" style="font-size:13px;color:var(--txt3);padding:8px 0">No deleted transactions.</div>
-    <div class="twrap hidden" id="deletedTableWrap">
-      <table>
-        <thead><tr>
-          <th>Deleted On</th><th>Date</th><th>FY</th><th>Type</th><th>Fund</th>
-          <th>Gross (PKR)</th><th>Net (PKR)</th><th>NAV</th><th>Units</th><th>Restore</th><th>Delete</th>
-        </tr></thead>
-        <tbody id="deletedBody"></tbody>
-      </table>
-    </div>
-  </div>
-</div><!-- /tab-history -->
+</div>
 
 <!-- ══ ADD / SELL ══ -->
 <div id="tab-add" class="hidden">
@@ -533,186 +461,60 @@ code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-siz
 const CAT = { Equity:'#22c55e', Balanced:'#60a5fa', Income:'#c084fc', Cash:'#f59e0b' };
 const TGT = { Equity:75, Balanced:15, Income:5, Cash:5 };
 
-// ── TARGET INVESTMENT PLAN (decided based on historical performance analysis)
-const PLAN = [
-  { f:'Meezan Islamic Fund',       cat:'Equity',   pct:75, color:'#22c55e',
-    reason:'Flagship equity fund · CAGR 16.8% · Largest Islamic equity fund in Pakistan (AUM Rs.64B) · Consistently beats KMI-30 benchmark' },
-  { f:'Meezan Balanced Fund',      cat:'Balanced', pct:15, color:'#60a5fa',
-    reason:'Best balanced fund · CAGR 18.13% · Beats benchmark every year · No back-end load · Active equity/income allocation' },
-  { f:'Meezan Islamic Income Fund',cat:'Income',   pct:5,  color:'#c084fc',
-    reason:'Best income fund · CAGR 9.83% · Beats benchmark every year FY17–FY25 · Sukuk-based stable returns' },
-  { f:'Meezan Cash Fund',          cat:'Cash',     pct:5,  color:'#f59e0b',
-    reason:'Capital preservation · Liquid money market · Emergency reserve · Instant redemption' },
-];
-
-// Historical BHD/PKR rates locked per investment date (NEVER auto-updated on NAV fetch)
-// Source: exchange-rates.org / wise.com historical data
-// 1 BHD = X PKR  (Bahraini Dinar is pegged to USD at 1 BHD = 2.659 USD)
+// Approximate historical BHD/PKR rates locked per investment date (never auto-updated)
 const HIST_RATES = {
-  '08/07/2025': 756.0,  // Jul 2025 ~756-757 (high was 757.5 on 8 Aug)
-  '09/09/2025': 751.0,  // Sep 2025 ~750-752
-  '26/09/2025': 750.0,  // Late Sep 2025 ~750
-  '28/10/2025': 753.0,  // Oct 2025 ~752-754 (high was 754.24 on Oct 17)
-  '01/12/2025': 744.0,  // Dec 2025 ~743-744
-  '02/01/2026': 742.0,  // Jan 2026 ~742
-  '27/01/2026': 741.5,  // Late Jan 2026 ~741-742
-  '02/03/2026': 740.0,  // Mar 2026 ~740
-  '09/04/2026': 737.5,  // Apr 2026 ~737-738 (low was 735.5 on 5 Apr)
-  '24/04/2026': 738.0,  // Late Apr 2026 ~738
+  '08/07/2025':358.0,'09/09/2025':354.5,'26/09/2025':353.0,
+  '28/10/2025':350.5,'01/12/2025':347.0,'02/01/2026':345.5,
+  '27/01/2026':344.0,'02/03/2026':342.0,'09/04/2026':340.5,'24/04/2026':340.0
 };
 
 const SEED = [
-  {t:'buy',d:'08/07/2025',f:'Meezan Balanced Fund',gross:5000,tc:74,load:11,tax:0,net:4915,nav:24.3011,units:202.2542,rate:756.0},
-  {t:'buy',d:'08/07/2025',f:'Meezan Cash Fund',gross:15000,tc:0,load:0,tax:0,net:15000,nav:51.5295,units:291.0954,rate:756.0},
-  {t:'buy',d:'08/07/2025',f:'Meezan Islamic Fund',gross:10000,tc:147,load:22,tax:0,net:9831,nav:133.3872,units:73.7027,rate:756.0},
-  {t:'buy',d:'08/07/2025',f:'Meezan Islamic Income Fund',gross:15000,tc:148,load:22,tax:0,net:14830,nav:51.8883,units:285.8062,rate:756.0},
-  {t:'buy',d:'08/07/2025',f:'Meezan Sovereign Fund',gross:5000,tc:49,load:7,tax:0,net:4944,nav:52.3845,units:94.3791,rate:756.0},
-  {t:'buy',d:'09/09/2025',f:'Meezan Balanced Fund',gross:10000,tc:147,load:22,tax:0,net:9831,nav:26.6277,units:369.2020,rate:751.0},
-  {t:'buy',d:'09/09/2025',f:'Meezan Islamic Fund',gross:40000,tc:590,load:88,tax:0,net:39322,nav:156.2960,units:251.5867,rate:751.0},
-  {t:'buy',d:'26/09/2025',f:'Meezan Balanced Fund',gross:10000,tc:147,load:22,tax:0,net:9831,nav:27.4215,units:358.5143,rate:750.0},
-  {t:'buy',d:'26/09/2025',f:'Meezan Cash Fund',gross:5000,tc:0,load:0,tax:0,net:5000,nav:52.5652,units:95.1200,rate:750.0},
-  {t:'buy',d:'26/09/2025',f:'Meezan Islamic Fund',gross:20000,tc:295,load:44,tax:0,net:19661,nav:164.0129,units:119.8747,rate:750.0},
-  {t:'buy',d:'26/09/2025',f:'Meezan Financial Planning Fund of Funds (Moderate)',gross:5000,tc:74,load:11,tax:0,net:4915,nav:142.8196,units:34.4140,rate:750.0},
-  {t:'buy',d:'28/10/2025',f:'KSE Meezan Index Fund',gross:30000,tc:75,load:442,tax:66,net:29417,nav:174.8047,units:168.2849,rate:753.0},
-  {t:'buy',d:'01/12/2025',f:'KSE Meezan Index Fund',gross:8000,tc:20,load:118,tax:18,net:7844,nav:182.2216,units:43.0465,rate:744.0},
-  {t:'buy',d:'01/12/2025',f:'Meezan Islamic Fund',gross:12000,tc:177,load:27,tax:0,net:11796,nav:164.7075,units:71.6179,rate:744.0},
-  {t:'buy',d:'02/01/2026',f:'Al Meezan Mutual Fund',gross:11000,tc:162,load:24,tax:0,net:10814,nav:52.3575,units:206.5416,rate:742.0},
-  {t:'buy',d:'02/01/2026',f:'KSE Meezan Index Fund',gross:7000,tc:18,load:103,tax:15,net:6864,nav:191.7764,units:35.7917,rate:742.0},
-  {t:'buy',d:'02/01/2026',f:'Meezan Islamic Fund',gross:7000,tc:103,load:15,tax:0,net:6882,nav:171.7074,units:40.0798,rate:742.0},
-  {t:'buy',d:'27/01/2026',f:'Al Meezan Mutual Fund',gross:5000,tc:74,load:11,tax:0,net:4915,nav:54.2142,units:90.6589,rate:741.5},
-  {t:'buy',d:'27/01/2026',f:'KSE Meezan Index Fund',gross:15000,tc:38,load:221,tax:33,net:14708,nav:201.1967,units:73.1026,rate:741.5},
-  {t:'buy',d:'27/01/2026',f:'Meezan Islamic Fund',gross:15000,tc:221,load:33,tax:0,net:14746,nav:179.1028,units:82.3326,rate:741.5},
-  {t:'buy',d:'02/03/2026',f:'Meezan Islamic Fund',gross:10000,tc:147,load:22,tax:0,net:9831,nav:142.3793,units:69.0480,rate:740.0},
-  {t:'buy',d:'09/04/2026',f:'Meezan Balanced Fund',gross:5000,tc:74,load:11,tax:0,net:4915,nav:27.2502,units:180.3656,rate:737.5},
-  {t:'buy',d:'09/04/2026',f:'Meezan Islamic Fund',gross:8000,tc:118,load:18,tax:0,net:7864,nav:159.8384,units:49.1997,rate:737.5},
-  {t:'buy',d:'24/04/2026',f:'Meezan Islamic Fund',gross:19500,tc:288,load:43,tax:0,net:19169,nav:162.1462,units:118.2205,rate:738.0},
-  {t:'buy',d:'24/04/2026',f:'Meezan Islamic Income Fund',gross:3000,tc:30,load:4,tax:0,net:2966,nav:55.5263,units:53.4161,rate:738.0},
-  {t:'buy',d:'24/04/2026',f:'Meezan Cash Fund',gross:1500,tc:0,load:0,tax:0,net:1500,nav:55.3966,units:27.0775,rate:738.0},
-  {t:'buy',d:'24/04/2026',f:'Meezan Balanced Fund',gross:6000,tc:88,load:13,tax:0,net:5899,nav:27.5938,units:213.7799,rate:738.0}
+  {t:'buy',d:'08/07/2025',f:'Meezan Balanced Fund',gross:5000,tc:74,load:11,tax:0,net:4915,nav:24.3011,units:202.2542,rate:358.0},
+  {t:'buy',d:'08/07/2025',f:'Meezan Cash Fund',gross:15000,tc:0,load:0,tax:0,net:15000,nav:51.5295,units:291.0954,rate:358.0},
+  {t:'buy',d:'08/07/2025',f:'Meezan Islamic Fund',gross:10000,tc:147,load:22,tax:0,net:9831,nav:133.3872,units:73.7027,rate:358.0},
+  {t:'buy',d:'08/07/2025',f:'Meezan Islamic Income Fund',gross:15000,tc:148,load:22,tax:0,net:14830,nav:51.8883,units:285.8062,rate:358.0},
+  {t:'buy',d:'08/07/2025',f:'Meezan Sovereign Fund',gross:5000,tc:49,load:7,tax:0,net:4944,nav:52.3845,units:94.3791,rate:358.0},
+  {t:'buy',d:'09/09/2025',f:'Meezan Balanced Fund',gross:10000,tc:147,load:22,tax:0,net:9831,nav:26.6277,units:369.2020,rate:354.5},
+  {t:'buy',d:'09/09/2025',f:'Meezan Islamic Fund',gross:40000,tc:590,load:88,tax:0,net:39322,nav:156.2960,units:251.5867,rate:354.5},
+  {t:'buy',d:'26/09/2025',f:'Meezan Balanced Fund',gross:10000,tc:147,load:22,tax:0,net:9831,nav:27.4215,units:358.5143,rate:353.0},
+  {t:'buy',d:'26/09/2025',f:'Meezan Cash Fund',gross:5000,tc:0,load:0,tax:0,net:5000,nav:52.5652,units:95.1200,rate:353.0},
+  {t:'buy',d:'26/09/2025',f:'Meezan Islamic Fund',gross:20000,tc:295,load:44,tax:0,net:19661,nav:164.0129,units:119.8747,rate:353.0},
+  {t:'buy',d:'26/09/2025',f:'Meezan Financial Planning Fund of Funds (Moderate)',gross:5000,tc:74,load:11,tax:0,net:4915,nav:142.8196,units:34.4140,rate:353.0},
+  {t:'buy',d:'28/10/2025',f:'KSE Meezan Index Fund',gross:30000,tc:75,load:442,tax:66,net:29417,nav:174.8047,units:168.2849,rate:350.5},
+  {t:'buy',d:'01/12/2025',f:'KSE Meezan Index Fund',gross:8000,tc:20,load:118,tax:18,net:7844,nav:182.2216,units:43.0465,rate:347.0},
+  {t:'buy',d:'01/12/2025',f:'Meezan Islamic Fund',gross:12000,tc:177,load:27,tax:0,net:11796,nav:164.7075,units:71.6179,rate:347.0},
+  {t:'buy',d:'02/01/2026',f:'Al Meezan Mutual Fund',gross:11000,tc:162,load:24,tax:0,net:10814,nav:52.3575,units:206.5416,rate:345.5},
+  {t:'buy',d:'02/01/2026',f:'KSE Meezan Index Fund',gross:7000,tc:18,load:103,tax:15,net:6864,nav:191.7764,units:35.7917,rate:345.5},
+  {t:'buy',d:'02/01/2026',f:'Meezan Islamic Fund',gross:7000,tc:103,load:15,tax:0,net:6882,nav:171.7074,units:40.0798,rate:345.5},
+  {t:'buy',d:'27/01/2026',f:'Al Meezan Mutual Fund',gross:5000,tc:74,load:11,tax:0,net:4915,nav:54.2142,units:90.6589,rate:344.0},
+  {t:'buy',d:'27/01/2026',f:'KSE Meezan Index Fund',gross:15000,tc:38,load:221,tax:33,net:14708,nav:201.1967,units:73.1026,rate:344.0},
+  {t:'buy',d:'27/01/2026',f:'Meezan Islamic Fund',gross:15000,tc:221,load:33,tax:0,net:14746,nav:179.1028,units:82.3326,rate:344.0},
+  {t:'buy',d:'02/03/2026',f:'Meezan Islamic Fund',gross:10000,tc:147,load:22,tax:0,net:9831,nav:142.3793,units:69.0480,rate:342.0},
+  {t:'buy',d:'09/04/2026',f:'Meezan Balanced Fund',gross:5000,tc:74,load:11,tax:0,net:4915,nav:27.2502,units:180.3656,rate:340.5},
+  {t:'buy',d:'09/04/2026',f:'Meezan Islamic Fund',gross:8000,tc:118,load:18,tax:0,net:7864,nav:159.8384,units:49.1997,rate:340.5},
+  {t:'buy',d:'24/04/2026',f:'Meezan Islamic Fund',gross:19500,tc:288,load:43,tax:0,net:19169,nav:162.1462,units:118.2205,rate:340.0},
+  {t:'buy',d:'24/04/2026',f:'Meezan Islamic Income Fund',gross:3000,tc:30,load:4,tax:0,net:2966,nav:55.5263,units:53.4161,rate:340.0},
+  {t:'buy',d:'24/04/2026',f:'Meezan Cash Fund',gross:1500,tc:0,load:0,tax:0,net:1500,nav:55.3966,units:27.0775,rate:340.0},
+  {t:'buy',d:'24/04/2026',f:'Meezan Balanced Fund',gross:6000,tc:88,load:13,tax:0,net:5899,nav:27.5938,units:213.7799,rate:340.0}
 ];
 
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
-let TXS = [], NAVs = {}, DELETED = [], liveRate = null;
+let TXS = [], NAVs = {}, lastDel = null, liveRate = null;
 let pieC = null, fyC = null, fxC = null;
 let selFY = null, curSec = 'buy';
 
 // ═══════════════════════════════════════════════════════════════
-// FIREBASE CONFIG & INIT
+// STORAGE
 // ═══════════════════════════════════════════════════════════════
-const FB_CONFIG = {
-  apiKey: "AIzaSyBYigRS6rktDGOjoWOpU6rfh2ovvS3kAqY",
-  authDomain: "meezan-tracker-498c3.firebaseapp.com",
-  projectId: "meezan-tracker-498c3",
-  storageBucket: "meezan-tracker-498c3.firebasestorage.app",
-  messagingSenderId: "86801550680",
-  appId: "1:86801550680:web:1f866256204337aee8a92d"
-};
-firebase.initializeApp(FB_CONFIG);
-const db = firebase.firestore();
-
-function setSyncStatus(icon, txt, color='var(--blue)', spin=false){
-  document.getElementById('syncIcon').className = `fas ${icon}${spin?' spin':''}`;
-  document.getElementById('syncIcon').style.color = color;
-  document.getElementById('syncTxt').textContent = txt;
-  document.getElementById('syncTxt').style.color = color;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// STORAGE — Firestore as primary, localStorage as fallback cache
-// ═══════════════════════════════════════════════════════════════
-function loadLocalCache(){
-  const s=localStorage.getItem('mz_v5');
+function load(){
+  const s=localStorage.getItem('mz_v4');
   TXS = s ? JSON.parse(s) : JSON.parse(JSON.stringify(SEED));
   const n=localStorage.getItem('mz_navs');
   NAVs = n ? JSON.parse(n) : {};
-  const d=localStorage.getItem('mz_deleted');
-  DELETED = d ? JSON.parse(d) : [];
 }
-
-function saveLocalCache(){
-  localStorage.setItem('mz_v5',JSON.stringify(TXS));
-  localStorage.setItem('mz_navs',JSON.stringify(NAVs));
-  localStorage.setItem('mz_deleted',JSON.stringify(DELETED));
-}
-
-// Save to both Firestore and local cache
-async function save(){
-  saveLocalCache();
-  try {
-    await db.collection('meezan').doc('portfolio').set({
-      transactions: TXS,
-      navs: NAVs,
-      deleted: DELETED,
-      lastUpdated: new Date().toISOString()
-    });
-    setSyncStatus('fa-cloud','Synced to cloud',  'var(--green)');
-    setTimeout(()=>setSyncStatus('fa-cloud','All changes saved','var(--txt3)'),2000);
-  } catch(e){
-    setSyncStatus('fa-exclamation-triangle','Saved locally only — cloud sync failed','var(--amber)');
-  }
-}
-
-// Load from Firestore, fall back to local cache
-async function load(){
-  loadLocalCache(); // show cached data instantly while fetching
-  setSyncStatus('fa-circle-notch','Syncing with cloud…','var(--blue)',true);
-  try {
-    const doc = await db.collection('meezan').doc('portfolio').get();
-    if(doc.exists){
-      const d = doc.data();
-      TXS     = d.transactions || JSON.parse(JSON.stringify(SEED));
-      NAVs    = d.navs         || {};
-      DELETED = d.deleted      || [];
-      saveLocalCache(); // update local cache with cloud data
-      setSyncStatus('fa-check-circle','Synced — data loaded from cloud','var(--green)');
-    } else {
-      // First time — no cloud data yet, push local seed data up
-      setSyncStatus('fa-cloud-upload-alt','First run — uploading data to cloud…','var(--blue)',true);
-      await save();
-      setSyncStatus('fa-check-circle','Cloud sync ready','var(--green)');
-    }
-    setTimeout(()=>setSyncStatus('fa-cloud','Cloud sync active','var(--txt3)'),3000);
-  } catch(e){
-    setSyncStatus('fa-wifi','Offline — showing cached data','var(--amber)');
-  }
-}
-
-// Fetch NAVs written by GitHub Action from Firestore
-async function fetchCloudNAVs(statusId){
-  const el = document.getElementById(statusId);
-  el.innerHTML = `<i class="fas fa-circle-notch spin"></i> Fetching latest NAVs from cloud…`;
-  try {
-    const doc = await db.collection('meezan').doc('navs').get();
-    if(doc.exists){
-      const d = doc.data();
-      if(d.success && d.navs && Object.keys(d.navs).length > 0){
-        let updated = 0;
-        for(const [fund, nav] of Object.entries(d.navs)){
-          if(nav > 0 && TXS.some(t=>t.f===fund)){
-            NAVs[fund] = nav;
-            updated++;
-          }
-        }
-        if(updated > 0){
-          await save();
-          const when = d.updatedAt ? ` · Last fetched: ${new Date(d.updatedAt).toLocaleString('en-GB')}` : '';
-          el.innerHTML = `<span class="tg"><i class="fas fa-check-circle"></i> Updated ${updated} NAVs from MUFAP${when}</span>`;
-          render();
-        } else {
-          el.innerHTML = `<span class="ta"><i class="fas fa-exclamation-triangle"></i> Connected but no matching NAVs found in cloud yet.</span>`;
-        }
-      } else {
-        el.innerHTML = `<span class="ta"><i class="fas fa-clock"></i> GitHub Action hasn't run yet — NAVs update daily at 6PM PKT. Check back later or run it manually on GitHub.</span>`;
-      }
-    } else {
-      el.innerHTML = `<span class="ta"><i class="fas fa-clock"></i> No NAV data in cloud yet. The GitHub Action runs daily at 6PM PKT.</span>`;
-    }
-  } catch(e){
-    el.innerHTML = `<span class="tr"><i class="fas fa-times-circle"></i> Could not reach cloud. Check your internet connection.</span>`;
-  }
-}
+function save(){ localStorage.setItem('mz_v4',JSON.stringify(TXS)); localStorage.setItem('mz_navs',JSON.stringify(NAVs)); }
 
 // ═══════════════════════════════════════════════════════════════
 // HELPERS
@@ -727,18 +529,6 @@ function cat(f){
 function getNav(f){
   if(NAVs[f]&&NAVs[f]>0)return NAVs[f];
   return TXS.filter(t=>t.f===f&&t.t==='buy').reduce((m,t)=>t.nav>m?t.nav:m,0)||100;
-}
-
-// Returns {min, max, count} of purchase NAVs for a fund within the current FY
-// Uses the currently selected FY (selFY) or falls back to latest FY
-function getFYNavStats(fund){
-  const fys=allFYs();
-  const fy=selFY||(fys[fys.length-1]||null);
-  if(!fy)return null;
-  const{start,end}=getFYRange(fy);
-  const navs=TXS.filter(t=>t.f===fund&&t.t==='buy'&&pd(t.d)>=start&&pd(t.d)<=end).map(t=>t.nav);
-  if(navs.length===0)return null;
-  return{min:Math.min(...navs),max:Math.max(...navs),count:navs.length,fy};
 }
 function $pkr(n){return'PKR '+Math.round(n).toLocaleString()}
 function $bhd(n){return'BHD '+n.toFixed(3)}
@@ -820,57 +610,32 @@ function fyPortfolio(fy){
 // ═══════════════════════════════════════════════════════════════
 // LIVE BHD/PKR
 // ═══════════════════════════════════════════════════════════════
-// BHD is pegged to USD at exactly 1 BHD = 2.659 USD (fixed peg since 1980)
-// We fetch USD/PKR then multiply by 2.659 to get BHD/PKR
-// This is the most reliable method since Frankfurter doesn't support BHD
-const BHD_USD_PEG = 2.659;
-
 async function fetchLiveRate(){
   try{
-    // Try open.er-api.com (free, no key needed)
-    const r=await fetch('https://open.er-api.com/v6/latest/USD',{signal:AbortSignal.timeout(8000)});
+    const r=await fetch('https://api.frankfurter.app/latest?base=BHD&symbols=PKR',{signal:AbortSignal.timeout(8000)});
     if(!r.ok)throw 0;
     const d=await r.json();
     if(d.rates?.PKR){
-      const usdPkr=d.rates.PKR;
-      liveRate=usdPkr*BHD_USD_PEG;
+      liveRate=d.rates.PKR;
       document.getElementById('liveRate').textContent=`1 BHD = ${liveRate.toFixed(2)} PKR`;
       document.getElementById('rateNote').textContent=`(live · ${new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'})})`;
       return liveRate;
     }
   }catch(e){}
-  // Fallback: try frankfurter for USD/PKR
-  try{
-    const r=await fetch('https://api.frankfurter.app/latest?base=USD&symbols=PKR',{signal:AbortSignal.timeout(6000)});
-    if(!r.ok)throw 0;
-    const d=await r.json();
-    if(d.rates?.PKR){
-      liveRate=d.rates.PKR*BHD_USD_PEG;
-      document.getElementById('liveRate').textContent=`1 BHD = ${liveRate.toFixed(2)} PKR`;
-      document.getElementById('rateNote').textContent=`(live · ${new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'})})`;
-      return liveRate;
-    }
-  }catch(e){}
-  // Last resort: use known approximate rate
-  liveRate=740;
-  document.getElementById('liveRate').textContent='~1 BHD ≈ 740 PKR';
+  liveRate=338;
+  document.getElementById('liveRate').textContent='~1 BHD ≈ 338 PKR';
   document.getElementById('rateNote').textContent='(estimated · offline)';
   return liveRate;
 }
 
 async function fetchHistRate(dateStr){
   if(HIST_RATES[dateStr])return HIST_RATES[dateStr];
-  // For historical dates, use frankfurter USD/PKR * BHD peg
   try{
     const[d,m,y]=dateStr.split('/');
-    const r=await fetch(`https://api.frankfurter.app/${y}-${m}-${d}?base=USD&symbols=PKR`,{signal:AbortSignal.timeout(8000)});
+    const r=await fetch(`https://api.frankfurter.app/${y}-${m}-${d}?base=BHD&symbols=PKR`,{signal:AbortSignal.timeout(8000)});
     if(!r.ok)throw 0;
     const j=await r.json();
-    if(j.rates?.PKR){
-      const rate=j.rates.PKR*BHD_USD_PEG;
-      HIST_RATES[dateStr]=rate;
-      return rate;
-    }
+    if(j.rates?.PKR){HIST_RATES[dateStr]=j.rates.PKR;return j.rates.PKR}
   }catch(e){}
   return interpRate(dateStr);
 }
@@ -891,7 +656,7 @@ function interpRate(dateStr){
 function render(){
   const{funds,totGross,totCurr,totBHD,catV}=portfolio();
   const gain=totCurr-totGross, gPct=totGross?gain/totGross*100:0, pos=gain>=0;
-  const lr=liveRate||740;
+  const lr=liveRate||338;
   const currBHD=totCurr/lr, grossBHD=totGross/lr;
 
   document.getElementById('hdate').textContent=new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'});
@@ -982,75 +747,24 @@ function render(){
   }).join('');
 
   // ── Fund breakdown (Funds tab)
-  document.getElementById('fundList').innerHTML=funds.map(fd=>{
-    const avgCost = fd.units>0 ? fd.net/fd.units : 0;
-    const navDiff = avgCost>0 ? (fd.nav-avgCost)/avgCost*100 : 0;
-    const navUp = fd.nav >= avgCost;
-    const fyStats = getFYNavStats(fd.f);
-    const fromMax = fyStats ? (fd.nav-fyStats.max)/fyStats.max*100 : null;
-    const fromMin = fyStats ? (fd.nav-fyStats.min)/fyStats.min*100 : null;
-    const posInRange = fyStats ? (fd.nav-fyStats.min)/(fyStats.max-fyStats.min||1)*100 : null;
-
-    return`<div class="fcard" style="border-left-color:${CAT[fd.cat]}">
+  document.getElementById('fundList').innerHTML=funds.map(fd=>`
+    <div class="fcard" style="border-left-color:${CAT[fd.cat]}">
       <div class="fhdr">
         <div><div class="fname">${fd.f}</div>
           <div class="ftag" style="color:${CAT[fd.cat]}">${fd.cat}</div></div>
         <span class="gbadge ${fd.ret>=0?'pos':'neg'}">${$pct(fd.ret)}</span>
       </div>
-      <div class="fdet" style="grid-template-columns:repeat(2,1fr)">
+      <div class="fdet">
         <div class="fd"><div class="fdl">Invested PKR</div>
           <div class="fdv">${$pkr(fd.gross)}</div>
           <div class="fdsub">${$bhd(fd.bhdInv)}</div></div>
         <div class="fd"><div class="fdl">Value Now</div>
           <div class="fdv">${$pkr(fd.curr)}</div>
           <div class="fdsub">${$bhd(fd.curr/lr)}</div></div>
-        <div class="fd"><div class="fdl">Units Held</div>
-          <div class="fdv">${fd.units.toFixed(4)}</div></div>
-        <div class="fd">
-          <div class="fdl">Avg Cost → Live NAV</div>
-          <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
-            <span class="fdv" style="color:var(--txt2)">${avgCost.toFixed(2)}</span>
-            <span style="font-size:10px;color:var(--txt3)">→</span>
-            <span class="fdv" style="color:${navUp?'var(--green)':'var(--red)'}">${fd.nav.toFixed(2)}</span>
-          </div>
-          <div style="margin-top:3px">
-            <span class="gbadge ${navUp?'pos':'neg'}" style="font-size:10px;padding:1px 7px">
-              ${navUp?'▲':'▼'} ${Math.abs(navDiff).toFixed(2)}% per unit
-            </span>
-          </div>
-        </div>
+        <div class="fd"><div class="fdl">Units · NAV</div>
+          <div class="fdv">${fd.units.toFixed(2)} · ${fd.nav.toFixed(2)}</div></div>
       </div>
-      ${fyStats ? `
-      <div style="margin-top:10px;background:rgba(255,255,255,.025);border-radius:9px;padding:11px">
-        <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:8px;font-weight:600">
-          <i class="fas fa-calendar-alt" style="margin-right:4px"></i>${fyStats.fy} NAV Range (from your ${fyStats.count} purchase${fyStats.count>1?'s':''})
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
-          <div style="text-align:center">
-            <div style="font-size:9px;color:var(--txt3);margin-bottom:2px">FY LOW</div>
-            <div style="font-size:14px;font-weight:700;color:var(--green);font-family:var(--fd)">${fyStats.min.toFixed(2)}</div>
-          </div>
-          <div style="flex:1;position:relative;height:6px;background:rgba(255,255,255,.08);border-radius:99px;min-width:60px">
-            <div style="position:absolute;left:0;top:0;bottom:0;width:${posInRange.toFixed(1)}%;background:linear-gradient(90deg,var(--green),var(--amber));border-radius:99px"></div>
-            <div style="position:absolute;top:-4px;width:14px;height:14px;background:var(--blue);border-radius:50%;border:2px solid var(--bg);
-              left:calc(${posInRange.toFixed(1)}% - 7px)" title="Current NAV"></div>
-          </div>
-          <div style="text-align:center">
-            <div style="font-size:9px;color:var(--txt3);margin-bottom:2px">FY HIGH</div>
-            <div style="font-size:14px;font-weight:700;color:var(--red);font-family:var(--fd)">${fyStats.max.toFixed(2)}</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <span class="gbadge ${fromMax<=0?'pos':'neg'}" style="font-size:10px;padding:2px 8px">
-            ${fromMax<=0?'▼':'▲'} ${Math.abs(fromMax).toFixed(1)}% from FY high
-          </span>
-          <span class="gbadge ${fromMin>=0?'neg':'pos'}" style="font-size:10px;padding:2px 8px">
-            ${fromMin>=0?'▲':'▼'} ${Math.abs(fromMin).toFixed(1)}% from FY low
-          </span>
-        </div>
-      </div>` : ''}
-    </div>`;
-  }).join('');
+    </div>`).join('');
 
   // ── NAV grid
   const fds=[...new Set(TXS.map(t=>t.f))];
@@ -1071,93 +785,7 @@ function render(){
   renderFY();
   renderFX(funds,totGross,totCurr,totBHD,lr);
   renderTxTable();
-  renderDeleted();
-  renderBuyOpportunity(funds,lr);
-  renderPlan(lr);
   updateSelects();
-}
-
-// ═══════════════════════════════════════════════════════════════
-// INVESTMENT PLAN + CALCULATOR
-// ═══════════════════════════════════════════════════════════════
-function renderPlan(lr){
-  const rate = lr || liveRate || 740;
-  document.getElementById('planFundList').innerHTML = PLAN.map(p => {
-    const nav = getNav(p.f);
-    // How much of this fund do I currently hold?
-    const holding = (() => {
-      let units=0, gross=0;
-      TXS.filter(t=>t.f===p.f).forEach(t=>{ if(t.t==='buy'){units+=t.units;gross+=t.gross;}else{units-=t.units;} });
-      return { units: Math.max(0,units), curr: Math.max(0,units)*nav, gross };
-    })();
-    return `
-    <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);
-      border:1px solid var(--border);border-left:3px solid ${p.color};border-radius:10px;padding:11px 13px;flex-wrap:wrap">
-      <div style="flex:1;min-width:160px">
-        <div style="font-size:13px;font-weight:600;color:var(--txt);line-height:1.3">${p.f}</div>
-        <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:${p.color};margin-top:2px;font-weight:600">${p.cat}</div>
-        <div style="font-size:10px;color:var(--txt3);margin-top:4px;line-height:1.4">${p.reason}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;white-space:nowrap">
-        <span style="font-family:var(--fd);font-size:22px;font-weight:800;color:${p.color}">${p.pct}%</span>
-        <span style="font-size:10px;color:var(--txt3)">of monthly invest</span>
-        ${holding.curr > 0 ? `<span style="font-size:10px;color:var(--txt2)">Held: ${$pkr(holding.curr)}</span>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function calcPlan(){
-  const amt = parseFloat(document.getElementById('calcAmt').value) || 0;
-  if(amt <= 0){ document.getElementById('calcResult').style.display='none'; document.getElementById('calcEmpty').style.display='block'; return; }
-  // Sync BHD field
-  const rate = liveRate || 740;
-  document.getElementById('calcBHD').value = (amt/rate).toFixed(3);
-  _showCalcResult(amt, rate);
-}
-
-function calcPlanBHD(){
-  const bhd = parseFloat(document.getElementById('calcBHD').value) || 0;
-  if(bhd <= 0){ document.getElementById('calcResult').style.display='none'; document.getElementById('calcEmpty').style.display='block'; return; }
-  const rate = liveRate || 740;
-  const amt = bhd * rate;
-  document.getElementById('calcAmt').value = Math.round(amt);
-  _showCalcResult(amt, rate);
-}
-
-function _showCalcResult(totalPKR, rate){
-  document.getElementById('calcEmpty').style.display = 'none';
-  document.getElementById('calcResult').style.display = 'block';
-
-  let rows = '';
-  PLAN.forEach(p => {
-    const alloc = totalPKR * p.pct / 100;
-    const allocBHD = alloc / rate;
-    const nav = getNav(p.f);
-    const estUnits = nav > 0 ? alloc / nav : 0;
-    rows += `
-      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);
-        border:1px solid var(--border);border-left:3px solid ${p.color};border-radius:9px;padding:10px 12px;flex-wrap:wrap">
-        <div style="flex:1;min-width:120px">
-          <div style="font-size:12px;font-weight:600;color:var(--txt)">${p.f}</div>
-          <div style="font-size:9px;color:${p.color};text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-top:1px">${p.cat} · ${p.pct}%</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:${p.color}">${$pkr(Math.round(alloc))}</div>
-          <div style="font-size:10px;color:var(--amber);margin-top:1px">${$bhd(allocBHD)}</div>
-          <div style="font-size:10px;color:var(--txt3);margin-top:1px">≈ ${estUnits.toFixed(2)} units @ ${nav.toFixed(2)} NAV</div>
-        </div>
-      </div>`;
-  });
-  document.getElementById('calcBreakdown').innerHTML = rows;
-
-  const totalBHD = totalPKR / rate;
-  document.getElementById('calcSummary').innerHTML =
-    `<i class="fas fa-info-circle" style="margin-right:6px;color:var(--green)"></i>
-    Total: <strong style="color:var(--txt)">${$pkr(Math.round(totalPKR))}</strong> &nbsp;·&nbsp;
-    <strong style="color:var(--amber)">${$bhd(totalBHD)}</strong> &nbsp;·&nbsp;
-    Across <strong>4 funds</strong> at the 75·15·5·5 strategy.
-    NAV-based unit estimates are approximate — actual units depend on the NAV at time of purchase.`;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1173,7 +801,7 @@ function renderFY(){
     <button class="fyBtn${fy===selFY?' on':''}" onclick="selFY='${fy}';renderFY()">${fy}</button>`).join('');
 
   const{funds,totGross,totCurr,totBHD}=fyPortfolio(selFY);
-  const lr=liveRate||740;
+  const lr=liveRate||338;
   const gain=totCurr-totGross, gPct=totGross?gain/totGross*100:0;
   const {start,end}=getFYRange(selFY);
   const fyTXS=TXS.filter(t=>pd(t.d)>=start&&pd(t.d)<=end);
@@ -1226,117 +854,6 @@ function renderFY(){
       scales:{x:{ticks:{color:'#364e63',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},
         y:{ticks:{color:'#364e63',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}}}}
   });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// BUYING OPPORTUNITY ANALYSIS
-// ═══════════════════════════════════════════════════════════════
-function renderBuyOpportunity(funds, lr){
-  const fys=allFYs();
-  const fy=selFY||(fys[fys.length-1]||null);
-
-  // BHD/PKR context: compare live rate to first investment rate
-  const firstRate=TXS.filter(t=>t.t==='buy').sort((a,b)=>pd(a.d)-pd(b.d))[0]?.rate||756;
-  const rateChgPct=(lr-firstRate)/firstRate*100; // negative = PKR weakened = more expensive for you
-  const rateAbove750=lr>=750, rateBelow740=lr<740;
-  const fxVerdict = rateAbove750
-    ? {txt:'favorable for you',color:'var(--green)',icon:'fa-thumbs-up',detail:`At ${lr.toFixed(0)} PKR/BHD you get more rupees per dinar, so your BHD buys more units.`}
-    : rateBelow740
-    ? {txt:'slightly expensive',color:'var(--red)',icon:'fa-thumbs-down',detail:`At ${lr.toFixed(0)} PKR/BHD your dinar buys fewer rupees than earlier this year. You may want to wait for a better rate if converting large amounts.`}
-    : {txt:'neutral',color:'var(--amber)',icon:'fa-minus',detail:`At ${lr.toFixed(0)} PKR/BHD the rate is in a normal range. Not a compelling FX reason to rush or delay.`};
-
-  // Analyse each fund
-  const analyses = funds.map(fd=>{
-    const stats=getFYNavStats(fd.f);
-    if(!stats)return null;
-    const curr=fd.nav;
-    const fromMax=(curr-stats.max)/stats.max*100;   // negative = below high
-    const fromMin=(curr-stats.min)/stats.min*100;   // positive = above low
-    const range=stats.max-stats.min;
-    const posInRange=range>0?(curr-stats.min)/range*100:50; // 0=at low, 100=at high
-    const avgCost=fd.units>0?fd.net/fd.units:0;
-    const belowAvgCost=curr<avgCost;
-
-    // Score: lower = better buying opportunity (0-100)
-    // Weighted: position in FY range (40%), distance below avg cost (30%), FX rate (30%)
-    const rangeScore=posInRange;                              // 0=best,100=worst
-    const costScore=belowAvgCost?Math.max(0,50-(avgCost-curr)/avgCost*200):60; // below avg cost = better
-    const fxScore=rateAbove750?20:rateBelow740?70:45;
-    const score=(rangeScore*0.4)+(costScore*0.3)+(fxScore*0.3);
-
-    let signal, sigColor, sigIcon, reasoning;
-    if(score<=30){
-      signal='Strong Buy'; sigColor='var(--green)'; sigIcon='fa-fire';
-      reasoning=`NAV is near the FY low (${posInRange.toFixed(0)}% of range)${belowAvgCost?', below your avg cost':''} and FX rate is ${fxVerdict.txt}. This is a compelling entry point.`;
-    } else if(score<=50){
-      signal='Good Entry'; sigColor='#4ade80'; sigIcon='fa-arrow-down';
-      reasoning=`NAV is in the lower half of the FY range (${posInRange.toFixed(0)}% of range)${belowAvgCost?', below your avg cost':''}, making this a reasonable buying opportunity.`;
-    } else if(score<=68){
-      signal='Neutral'; sigColor='var(--amber)'; sigIcon='fa-minus';
-      reasoning=`NAV is mid-range for the FY (${posInRange.toFixed(0)}% of range). Not a clear dip — you could invest a partial amount and hold the rest for a better price.`;
-    } else {
-      signal='Wait'; sigColor='var(--red)'; sigIcon='fa-clock';
-      reasoning=`NAV is in the upper ${(100-posInRange).toFixed(0)}% of the FY range — closer to the high than the low. Consider waiting for a pullback${!belowAvgCost?`, especially since it's above your avg cost of ${avgCost.toFixed(2)}`:''}. Set a price alert around ${(curr*0.94).toFixed(2)}.`;
-    }
-
-    return{f:fd.f,cat:fd.cat,curr,min:stats.min,max:stats.max,fromMax,fromMin,posInRange,signal,sigColor,sigIcon,reasoning,avgCost,belowAvgCost};
-  }).filter(Boolean);
-
-  // Overall summary
-  const strongBuys=analyses.filter(a=>a.signal==='Strong Buy'||a.signal==='Good Entry');
-  const waitFunds=analyses.filter(a=>a.signal==='Wait');
-
-  document.getElementById('buyOppBody').innerHTML=`
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-      <span style="background:var(--adim);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--amber)">
-        <i class="fas fa-coins" style="margin-right:5px"></i>BHD/PKR: ${lr.toFixed(0)} &nbsp;·&nbsp;
-        <i class="fas ${fxVerdict.icon}" style="margin-right:4px;color:${fxVerdict.color}"></i>
-        <span style="color:${fxVerdict.color}">FX is ${fxVerdict.txt}</span>
-      </span>
-      ${strongBuys.length>0
-        ?`<span style="background:var(--gdim);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--green)">
-            <i class="fas fa-fire" style="margin-right:5px"></i>${strongBuys.length} fund${strongBuys.length>1?'s':''} look like good buys right now
-          </span>`
-        :`<span style="background:var(--rdim);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--red)">
-            <i class="fas fa-clock" style="margin-right:5px"></i>No strong buying signals right now
-          </span>`}
-    </div>
-    <div style="font-size:12px;color:var(--txt3)">${fxVerdict.detail} Analysis based on ${fy||'current FY'} NAV range from your purchase history.</div>`;
-
-  document.getElementById('buyOppFunds').innerHTML=analyses.map(a=>`
-    <div style="background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:9px;border-left:3px solid ${a.sigColor}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--txt)">${a.f}</div>
-          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:${CAT[a.cat]};margin-top:2px">${a.cat}</div>
-        </div>
-        <span style="background:${a.sigColor}22;border:1px solid ${a.sigColor}44;color:${a.sigColor};
-          border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;white-space:nowrap">
-          <i class="fas ${a.sigIcon}" style="margin-right:5px"></i>${a.signal}
-        </span>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-        <span style="font-size:11px;color:var(--txt3)">FY Low: <strong style="color:var(--green)">${a.min.toFixed(2)}</strong></span>
-        <div style="flex:1;min-width:80px;position:relative;height:5px;background:rgba(255,255,255,.08);border-radius:99px">
-          <div style="position:absolute;left:0;top:0;bottom:0;width:${a.posInRange.toFixed(1)}%;background:linear-gradient(90deg,var(--green),var(--amber),var(--red));border-radius:99px"></div>
-          <div style="position:absolute;top:-4px;width:12px;height:12px;background:var(--blue);border-radius:50%;border:2px solid var(--bg);left:calc(${a.posInRange.toFixed(1)}% - 6px)"></div>
-        </div>
-        <span style="font-size:11px;color:var(--txt3)">FY High: <strong style="color:var(--red)">${a.max.toFixed(2)}</strong></span>
-        <span style="font-size:12px;font-weight:700;color:var(--blue)">Now: ${a.curr.toFixed(2)}</span>
-      </div>
-      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px">
-        <span class="gbadge ${a.fromMax<=0?'pos':'neg'}" style="font-size:10px;padding:1px 7px">
-          ${a.fromMax<=0?'▼':'▲'} ${Math.abs(a.fromMax).toFixed(1)}% from FY high
-        </span>
-        <span class="gbadge ${a.fromMin<=15?'pos':'neg'}" style="font-size:10px;padding:1px 7px">
-          ▲ ${a.fromMin.toFixed(1)}% above FY low
-        </span>
-        ${a.belowAvgCost
-          ?`<span class="gbadge pos" style="font-size:10px;padding:1px 7px">✓ Below your avg cost ${a.avgCost.toFixed(2)}</span>`
-          :`<span class="gbadge neg" style="font-size:10px;padding:1px 7px">▲ Above your avg cost ${a.avgCost.toFixed(2)}</span>`}
-      </div>
-      <div style="font-size:12px;color:var(--txt2);line-height:1.55">${a.reasoning}</div>
-    </div>`).join('');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1449,7 +966,7 @@ function renderTxTable(){
       <td style="color:var(--txt3)">${t.units?t.units.toFixed(4):'—'}</td>
       <td>
         <button class="btn btn-r delBtn" data-d="${t.d}" data-f="${t.f}" data-g="${t.gross||0}" data-t="${t.t}"
-          style="padding:3px 9px;font-size:10px" title="Move to deleted"><i class="fas fa-trash-alt"></i></button>
+          style="padding:3px 9px;font-size:10px"><i class="fas fa-times"></i></button>
       </td>
     </tr>`;
   }).join('');
@@ -1457,55 +974,15 @@ function renderTxTable(){
   document.querySelectorAll('.delBtn').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const{d,f,g,t}=btn.dataset;
+      if(!confirm(`Delete ${t} for ${f} on ${d}?`))return;
       const idx=TXS.findIndex(tx=>tx.f===f&&tx.d===d&&tx.t===t&&(tx.gross||0)==parseFloat(g));
       if(idx!==-1){
-        const removed={...TXS[idx], _deletedOn: new Date().toLocaleDateString('en-GB')};
-        DELETED.unshift(removed);
+        lastDel={tx:{...TXS[idx]},idx};
         TXS.splice(idx,1);
-        save(); render();
+        save();render();
+        document.getElementById('undoBar').classList.remove('hidden');
+        setTimeout(()=>document.getElementById('undoBar').classList.add('hidden'),7000);
       }
-    });
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// DELETED SECTION
-// ═══════════════════════════════════════════════════════════════
-function renderDeleted(){
-  const count=DELETED.length;
-  document.getElementById('deletedCount').textContent=count;
-  const empty=document.getElementById('deletedEmpty');
-  const wrap=document.getElementById('deletedTableWrap');
-  if(count===0){ empty.classList.remove('hidden'); wrap.classList.add('hidden'); return; }
-  empty.classList.add('hidden'); wrap.classList.remove('hidden');
-
-  document.getElementById('deletedBody').innerHTML=DELETED.map((t,i)=>`<tr>
-    <td style="color:var(--txt3);font-size:11px">${t._deletedOn||'—'}</td>
-    <td>${t.d}</td>
-    <td><span class="fyTag">${getFY(t.d)||''}</span></td>
-    <td><span class="${t.t==='buy'?'tybuy':'tysell'}">${t.t}</span></td>
-    <td style="color:var(--txt);max-width:120px;word-break:break-word">${t.f}</td>
-    <td>${$pkr(t.gross||0)}</td>
-    <td><strong style="color:${t.t==='buy'?'var(--green)':'var(--red)'}">${$pkr(t.net||0)}</strong></td>
-    <td style="color:var(--txt3)">${t.nav?t.nav.toFixed(4):'—'}</td>
-    <td style="color:var(--txt3)">${t.units?t.units.toFixed(4):'—'}</td>
-    <td>
-      <button class="btn" style="background:var(--gdim);color:var(--green);border:1px solid rgba(34,197,94,.3);padding:3px 9px;font-size:10px" 
-        onclick="restoreDeleted(${i})" title="Restore"><i class="fas fa-undo"></i> Restore</button>
-    </td>
-    <td>
-      <button class="btn btn-r permDelBtn" data-i="${i}" style="padding:3px 9px;font-size:10px" title="Delete permanently">
-        <i class="fas fa-times"></i></button>
-    </td>
-  </tr>`).join('');
-
-  document.querySelectorAll('.permDelBtn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const i=parseInt(btn.dataset.i);
-      const t=DELETED[i];
-      if(!confirm(`Permanently delete this ${t.t} of ${t.f} on ${t.d}?\n\nThis cannot be undone.`))return;
-      DELETED.splice(i,1);
-      save(); renderDeleted();
     });
   });
 }
@@ -1640,6 +1117,25 @@ async function addSell(){
 }
 
 // ═══════════════════════════════════════════════════════════════
+// FETCH NAVs
+// ═══════════════════════════════════════════════════════════════
+async function fetchNAVs(statusId){
+  const el=document.getElementById(statusId);
+  el.innerHTML=`<i class="fas fa-circle-notch spin"></i> Fetching from MUFAP…`;
+  try{
+    const res=await fetch('http://127.0.0.1:5000/api/navs',{signal:AbortSignal.timeout(12000)});
+    const d=await res.json();
+    if(d.success&&d.navs){
+      let n=0;
+      for(const[f,v]of Object.entries(d.navs))if(v>0&&TXS.some(t=>t.f===f)){NAVs[f]=v;n++}
+      if(n>0){save();render();el.innerHTML=`<span class="tg"><i class="fas fa-check-circle"></i> Updated ${n} NAVs from MUFAP.</span>`}
+      else el.innerHTML=`<span class="ta"><i class="fas fa-exclamation-triangle"></i> Connected but no matching NAVs found.</span>`;
+    }else el.innerHTML=`<span class="tr"><i class="fas fa-times-circle"></i> ${d.error||'Backend error.'}</span>`;
+  }catch(e){
+    el.innerHTML=`<span class="tm"><i class="fas fa-server"></i> Backend offline — run <code>python backend.py</code>. Showing last-known NAVs.</span>`;
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════
 // SECTION SWITCH
 // ═══════════════════════════════════════════════════════════════
@@ -1676,9 +1172,9 @@ document.querySelectorAll('.tb').forEach(btn=>{
 // ═══════════════════════════════════════════════════════════════
 // EVENT BINDINGS
 // ═══════════════════════════════════════════════════════════════
-document.getElementById('fetchNavOvBtn').onclick=()=>fetchCloudNAVs('navStOv');
-document.getElementById('fetchNavNvBtn').onclick=()=>fetchCloudNAVs('navStNv');
-document.getElementById('fetchNavAddBtn').onclick=()=>fetchCloudNAVs('navStOv');
+document.getElementById('fetchNavOvBtn').onclick=()=>fetchNAVs('navStOv');
+document.getElementById('fetchNavNvBtn').onclick=()=>fetchNAVs('navStNv');
+document.getElementById('fetchNavAddBtn').onclick=()=>fetchNAVs('navStOv');
 document.getElementById('applyNvBtn').onclick=()=>{save();render();document.getElementById('navStNv').innerHTML=`<span class="tg"><i class="fas fa-check"></i> Manual NAVs applied.</span>`};
 document.getElementById('addBuyBtn').onclick=addBuy;
 document.getElementById('addSellBtn').onclick=addSell;
@@ -1704,16 +1200,15 @@ document.getElementById('fetchRateSellBtn').onclick=async()=>{
   sellPreview();
 };
 
-document.getElementById('resetBtn').onclick=async()=>{
+document.getElementById('resetBtn').onclick=()=>{
   if(!confirm('Reset ALL data to original history? This cannot be undone.'))return;
-  TXS=JSON.parse(JSON.stringify(SEED)); NAVs={}; DELETED=[];
-  await save(); render();
+  TXS=JSON.parse(JSON.stringify(SEED));NAVs={};lastDel=null;
+  save();render();document.getElementById('undoBar').classList.add('hidden');
 };
-document.getElementById('clearAllDeletedBtn').onclick=()=>{
-  if(DELETED.length===0)return;
-  if(!confirm(`Permanently delete all ${DELETED.length} deleted transaction(s)?\n\nThis cannot be undone.`))return;
-  DELETED=[];
-  save(); renderDeleted();
+document.getElementById('restoreBtn').onclick=()=>{
+  if(!lastDel)return;
+  TXS.splice(lastDel.idx,0,lastDel.tx);save();render();lastDel=null;
+  document.getElementById('undoBar').classList.add('hidden');
 };
 document.getElementById('clearFl').onclick=()=>{
   ['flFund','flType','flFY'].forEach(id=>document.getElementById(id).value='');
@@ -1723,34 +1218,18 @@ document.getElementById('clearFl').onclick=()=>{
 ['flFund','flType','flFY'].forEach(id=>document.getElementById(id).addEventListener('change',renderTxTable));
 ['flFrom','flTo'].forEach(id=>document.getElementById(id).addEventListener('input',renderTxTable));
 
-function restoreDeleted(i){
-  const tx={...DELETED[i]};
-  delete tx._deletedOn;
-  DELETED.splice(i,1);
-  TXS.push(tx);
-  save(); render();
-}
-
 // ═══════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════
 if('serviceWorker'in navigator){
   navigator.serviceWorker.register('service-worker.js').catch(()=>{});
 }
-
-// Start: load local cache instantly, then sync from Firebase, then fetch live rate
-loadLocalCache();
-render(); // show cached data immediately so app feels instant
-
-load().then(()=>{
-  render(); // re-render with cloud data once loaded
-  return fetchLiveRate();
-}).then(()=>{
-  render(); // re-render with live BHD rate
+load();
+fetchLiveRate().then(()=>{
+  render();
   setTimeout(()=>{
-    document.getElementById('navStOv').textContent =
-      'NAVs update daily at 6PM PKT via GitHub Action. Click Fetch Latest NAVs to load from cloud.';
-  }, 900);
+    document.getElementById('navStOv').textContent='NAVs are last-known. Click Fetch Latest NAVs (requires backend running).';
+  },900);
 });
 </script>
 </body>
