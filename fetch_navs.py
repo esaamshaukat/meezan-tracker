@@ -47,13 +47,25 @@ HEADERS    = {
 
 # ── FIREBASE ───────────────────────────────────────────────────────────────────
 def init_firebase():
+    # Option 1: full JSON in one secret
     cred_json = os.environ.get('FIREBASE_SERVICE_ACCOUNT')
     if cred_json:
         cred = credentials.Certificate(json.loads(cred_json))
+    # Option 2: three separate secrets (existing GitHub setup)
+    elif os.environ.get('FIREBASE_PROJECT_ID'):
+        cred_dict = {
+            'type': 'service_account',
+            'project_id':   os.environ['FIREBASE_PROJECT_ID'],
+            'client_email': os.environ['FIREBASE_CLIENT_EMAIL'],
+            'private_key':  os.environ['FIREBASE_PRIVATE_KEY'].replace('\\n', '\n'),
+            'token_uri':    'https://oauth2.googleapis.com/token',
+        }
+        cred = credentials.Certificate(cred_dict)
+    # Option 3: local file (running on your PC)
     elif os.path.exists('serviceAccount.json'):
         cred = credentials.Certificate('serviceAccount.json')
     else:
-        raise RuntimeError('No Firebase credentials found. Set FIREBASE_SERVICE_ACCOUNT env var.')
+        raise RuntimeError('No Firebase credentials found. Set FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY env vars.')
     firebase_admin.initialize_app(cred)
     return firestore.client()
 
