@@ -11,6 +11,8 @@ Runs on schedule to:
 import os
 import json
 import time
+import re
+import sys
 import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -44,7 +46,8 @@ ALL_TRACKED_FUNDS = [
 ]
 
 PLAN_FUNDS = ALL_TRACKED_FUNDS[:4]
-MUFAP_URL  = 'https://www.mufap.com.pk/Industry/IndustryStatDaily?tab=1'
+MUFAP_URL  = 'https://www.mufap.com.pk/Industry/IndustryStatDaily?tab=3'
+MUFAP_READER_URL = f'https://r.jina.ai/http://www.mufap.com.pk/Industry/IndustryStatDaily?tab=3'
 HEADERS    = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -158,6 +161,23 @@ def parse_html_navs(html):
         return parse_pandas(html)
     return {}
 
+def parse_reader_navs(markdown):
+    """Parse MUFAP's NAV table as returned by the text-reader fallback."""
+    result = {}
+    row_re = re.compile(
+        r'^\|\s*[^|]+\|\s*\[([^]]+)\]\([^)]+\)\s*\|\s*[^|]+\|'
+        r'\s*[^|]+\|\s*[^|]+\|\s*[^|]+\|\s*([\d,.]+)\s*\|',
+        re.MULTILINE,
+    )
+    for name, nav_text in row_re.findall(markdown):
+        try:
+            nav = float(nav_text.replace(',', ''))
+            if nav > 0:
+                result[name.strip()] = nav
+        except ValueError:
+            pass
+    return result
+
 # ── MUFAP FETCH ────────────────────────────────────────────────────────────────
 def fetch_today_navs():
     today    = date.today()
@@ -191,6 +211,20 @@ def fetch_today_navs():
             print(f'    Attempt {i+1} failed: {e}')
         time.sleep(0.3)
 
+    # MUFAP currently protects the site with a Cloudflare browser challenge,
+    # which rejects requests from GitHub-hosted runners. This reader retrieves
+    # the same public MUFAP page and returns its table as plain Markdown.
+    try:
+        resp = requests.get(MUFAP_READER_URL, headers=HEADERS, timeout=60)
+        if resp.status_code == 200:
+            result = parse_reader_navs(resp.text)
+            if result:
+                print('    MUFAP fetch succeeded (reader fallback)')
+                return result
+        print(f'    Reader fallback returned HTTP {resp.status_code}')
+    except Exception as e:
+        print(f'    Reader fallback failed: {e}')
+
     return {}
 
 # ── MAIN ───────────────────────────────────────────────────────────────────────
@@ -222,7 +256,13 @@ def main():
     # Write on EVERY run so the timestamp always reflects last check time
     print(f'\n[2] Writing to meezan/navs (always, every run)...')
     navs_ref = db.collection('meezan').document('navs')
-    if tracked:
+    # A partial/changed response must never replace the complete stored set.
+    fetch_ok = len(tracked) == len(ALL_TRACKED_FUNDS)
+    if not fetch_ok:
+        missing = [f for f in ALL_TRACKED_FUNDS if f not in tracked]
+        print(f'    Incomplete result ({len(tracked)}/{len(ALL_TRACKED_FUNDS)}); missing: {missing}')
+
+    if fetch_ok:
         navs_ref.set({
             'navs':        tracked,
             'success':     True,
@@ -236,14 +276,18 @@ def main():
         # No new data — write lastChecked so app knows the script ran
         existing = navs_ref.get()
         if existing.exists:
-            navs_ref.update({'lastChecked': now, 'success': False})
+            navs_ref.update({
+                'lastChecked': now,
+                'success': False,
+                'lastError': f'Incomplete MUFAP result: {len(tracked)}/{len(ALL_TRACKED_FUNDS)} funds',
+            })
             print(f'    No NAVs — updated lastChecked only: {now}')
         else:
             navs_ref.set({'navs': {}, 'success': False, 'lastChecked': now, 'updatedAt': now})
             print(f'    No NAVs — created empty doc with timestamp: {now}')
 
     # ── Step 3: Update navHistory ──────────────────────────────────────────────
-    if tracked:
+    if fetch_ok:
         print(f'\n[3] Updating navHistory for {iso}...')
         try:
             port_ref = db.collection('meezan').document('portfolio')
@@ -286,6 +330,10 @@ def main():
             print(f'      {fund}: Low={s["low"]:.4f}  High={s["high"]:.4f}')
 
     print('\nDone.')
+    if not fetch_ok:
+        # Make GitHub Actions visibly fail instead of reporting a misleading
+        # green run when only the failure timestamp reached Firestore.
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
