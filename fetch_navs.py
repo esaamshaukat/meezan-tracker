@@ -215,7 +215,13 @@ def fetch_today_navs():
     # which rejects requests from GitHub-hosted runners. This reader retrieves
     # the same public MUFAP page and returns its table as plain Markdown.
     try:
-        resp = requests.get(MUFAP_READER_URL, headers=HEADERS, timeout=60)
+        # Do not forward MUFAP's Referer/browser headers to the reader service;
+        # it rejects that mismatched header set with HTTP 403.
+        resp = requests.get(
+            MUFAP_READER_URL,
+            headers={'User-Agent': 'Wafrah-NAV-Updater/1.0'},
+            timeout=60,
+        )
         if resp.status_code == 200:
             result = parse_reader_navs(resp.text)
             if result:
