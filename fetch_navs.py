@@ -228,6 +228,9 @@ def fetch_today_navs():
                 print('    MUFAP fetch succeeded (reader fallback)')
                 return result
         print(f'    Reader fallback returned HTTP {resp.status_code}')
+        print("DEBUG length:", len(r.text))
+        print("DEBUG has Meezan:", "Meezan" in r.text)
+        print("DEBUG first 1000 chars:", r.text[:1000])
     except Exception as e:
         print(f'    Reader fallback failed: {e}')
 
