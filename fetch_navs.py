@@ -219,7 +219,12 @@ def fetch_today_navs():
         # it rejects that mismatched header set with HTTP 403.
         resp = requests.get(
             MUFAP_READER_URL,
-            headers={'User-Agent': 'Wafrah-NAV-Updater/1.0'},
+            headers={
+                'User-Agent': 'Wafrah-NAV-Updater/1.0',
+                'X-Engine': 'browser',
+                'X-Timeout': '40',
+                'X-No-Cache': 'true',
+            },
             timeout=60,
         )
         if resp.status_code == 200:
